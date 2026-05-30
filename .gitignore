@@ -1,0 +1,31 @@
+# Agent sync state — generated at runtime, not versioned
+.agent-sync/DAILY.md
+.agent-sync/results/
+.agent-sync/AUDIT.md
+
+# Keep TEAM.md and ROUTING.md (project-specific, meaningful to version)
+# .agent-sync/TEAM.md   ← keep
+# .agent-sync/ROUTING.md ← keep
+
+# Worktrees created by Claude Code
+.claude/worktrees/
+
+# Chief-of-staff private context (personal data)
+private/
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.idea/
+.vscode/settings.json
+
+# Node (tests runner)
+tests/node_modules/
+tests/reports/
+tests/transcripts/
+
+# Logs
+*.log
+bash-commands.log
