@@ -106,6 +106,26 @@ cd .. ; Remove-Item a-team -Recurse -Force
 
 ---
 
+## Adding A Team to an Existing Project
+
+If the project is already in progress, use `cp -rn` (no-clobber) when copying the folders so your existing files are not overwritten:
+
+```bash
+cp -rn a-team/.claude    ./
+cp -rn a-team/skills     ./
+cp -rn a-team/hooks      ./
+cp -rn a-team/templates  ./
+cp     a-team/INIT_TEMPLATE.md ./INIT.md
+```
+
+Then fill out `INIT.md` to describe **what already exists** — languages, frameworks, current test coverage, known technical debt. The orchestrator uses this to prune irrelevant agents; accuracy here matters more than on a greenfield project.
+
+After running `/orchestrate init`, review `.agent-sync/TEAM.md` before doing any work. Restore any agent that was incorrectly pruned. Start the first session with `/orchestrate morning` to let the orchestrator read the repo state before touching anything.
+
+> **Note:** If you already have a `.claude/settings.json`, do not let the install overwrite it — merge the A Team permissions manually to preserve your existing configuration.
+
+---
+
 ## Quick Start
 
 After installing, three steps to get the full team operational:
@@ -514,8 +534,6 @@ A Team was built by studying the architecture and workflow patterns of the follo
 | [claude-skills](https://github.com/alirezarezvani/claude-skills) | Modular skill library architecture with native tool integrations |
 | [Pi-DCP](https://github.com/PSU3D0/pi-dcp) | Token optimization via hooks that prune redundant command history and debug logs from agent context |
 | [GitAgent (Open GAP)](https://github.com/open-gitagent/opengap) | Agent identity standardization through structured files and framework-agnostic state contracts |
-| repo-agent-context — **TODO: URL não confirmado, adiciona o link correto antes de publicar** | Using the GitHub CLI to package and structure local repository context for agents |
-| Opencode-DCP — **TODO: URL não confirmado, adiciona o link correto antes de publicar** | Token optimization hooks adapted for the OpenCode agent ecosystem |
 
 ## License
 

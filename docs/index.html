@@ -904,6 +904,20 @@ cd .. ; Remove-Item a-team -Recurse -Force</code></pre></div></div>
           <p>That said, senior developers will recognise the patterns (Clean Architecture, OWASP, TDD) and may want to customise the rules for their specific context.</p>
         </div>
       </details>
+
+      <details class="faq-item">
+        <summary>Can I add A Team to a project that's already in progress?</summary>
+        <div class="faq-body">
+          <p>Yes. The process has four steps:</p>
+          <ol>
+            <li><strong>Install with <code>-n</code> (no-clobber)</strong> — copy <code>.claude/</code>, <code>skills/</code>, <code>hooks/</code>, and <code>templates/</code> into your project root using <code>cp -rn</code>. This skips any files you already have, so your existing <code>.claude/settings.json</code> and agent configs are preserved.</li>
+            <li><strong>Fill out <code>INIT.md</code> to describe what already exists</strong> — list the languages, frameworks, and modules already in use. Describe the current test coverage and any known technical debt. The orchestrator uses this to prune irrelevant agents; if you don't describe your stack accurately, it may delete agents you need or keep ones you don't.</li>
+            <li><strong>Run <code>/orchestrate init</code> and review the result</strong> — check <code>.agent-sync/TEAM.md</code> before continuing. Restore any agent that was pruned incorrectly.</li>
+            <li><strong>Start with <code>/orchestrate morning</code></strong> — let the orchestrator read the repo state before you make any changes. Approve the plan, then proceed.</li>
+          </ol>
+          <p><strong>What to avoid:</strong> don't let A Team overwrite an existing <code>.claude/settings.json</code> without reviewing the merge — you may lose permissions or hooks you already configured. And don't request retroactive TDD across the whole codebase at once; prioritise the areas with the highest change frequency or risk first.</p>
+        </div>
+      </details>
     </div>
 
     <div class="faq-group reveal">
