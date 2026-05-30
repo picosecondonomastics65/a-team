@@ -4,6 +4,8 @@ A portable, model-agnostic multi-agent infrastructure for AI coding assistants. 
 
 > **Born from the community.** A Team was built by studying, using, and needing to personalise several excellent open-source agent projects. The architecture combines the best patterns from each into a single, portable baseline. See [Acknowledgments](#acknowledgments) for the projects that made this possible.
 
+**[→ Visual overview & live demo](https://rbraga01.github.io/a-team/)**
+
 ---
 
 ## What It Does
