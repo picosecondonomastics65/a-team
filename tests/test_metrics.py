@@ -76,3 +76,78 @@ def test_read_events_spans_multiple_days(tmp_path):
     assert len(events) == 2
     assert any("session_start" in e for e in events)
     assert any("task_complete" in e for e in events)
+
+
+# --- metrics_report tests ---
+# metrics-report.py has a hyphen so it cannot be imported with a plain import statement.
+# Use importlib to load it by file path.
+import importlib.util as _ilu
+
+_mr_spec = _ilu.spec_from_file_location(
+    "metrics_report",
+    Path(__file__).parent.parent / ".agent-sync" / "metrics-report.py",
+)
+mr = _ilu.module_from_spec(_mr_spec)
+_mr_spec.loader.exec_module(mr)
+
+
+def test_parse_events_counts_sessions(tmp_path):
+    m.append_metric("session_start", base_dir=tmp_path)
+    m.append_metric("session_start", base_dir=tmp_path)
+    stats = mr.parse_events(days=1, base_dir=tmp_path)
+    assert stats["sessions"] == 2
+
+
+def test_parse_events_counts_tasks(tmp_path):
+    m.append_metric("task_dispatch TASK-001 code-reviewer main", base_dir=tmp_path)
+    m.append_metric("task_dispatch TASK-002 debugger main", base_dir=tmp_path)
+    m.append_metric("task_complete TASK-001 code-reviewer", base_dir=tmp_path)
+    m.append_metric("task_failed TASK-002 debugger", base_dir=tmp_path)
+    stats = mr.parse_events(days=1, base_dir=tmp_path)
+    assert stats["dispatched"] == 2
+    assert stats["complete"] == 1
+    assert stats["failed"] == 1
+
+
+def test_parse_events_counts_interventions(tmp_path):
+    m.append_metric("human_intervention TASK-003 unblocked_manually", base_dir=tmp_path)
+    stats = mr.parse_events(days=1, base_dir=tmp_path)
+    assert stats["interventions"] == 1
+
+
+def test_parse_events_calculates_success_rate(tmp_path):
+    m.append_metric("task_dispatch TASK-001 agent main", base_dir=tmp_path)
+    m.append_metric("task_dispatch TASK-002 agent main", base_dir=tmp_path)
+    m.append_metric("task_dispatch TASK-003 agent main", base_dir=tmp_path)
+    m.append_metric("task_complete TASK-001 agent", base_dir=tmp_path)
+    m.append_metric("task_complete TASK-002 agent", base_dir=tmp_path)
+    m.append_metric("task_failed TASK-003 agent", base_dir=tmp_path)
+    stats = mr.parse_events(days=1, base_dir=tmp_path)
+    assert stats["success_rate"] == 66
+
+
+def test_parse_events_empty_logs(tmp_path):
+    stats = mr.parse_events(days=7, base_dir=tmp_path)
+    assert stats["sessions"] == 0
+    assert stats["dispatched"] == 0
+    assert stats["success_rate"] == 0
+
+
+def test_rotate_logs_compresses_old_files(tmp_path):
+    from datetime import date, timedelta
+    old_date = date.today() - timedelta(days=31)
+    old_log = tmp_path / "metrics" / f"{old_date}.log"
+    old_log.parent.mkdir(parents=True, exist_ok=True)
+    old_log.write_text("2026-01-01T09:00:00 session_start\n")
+    mr.rotate_logs(base_dir=tmp_path)
+    assert not old_log.exists()
+    assert (tmp_path / "metrics" / f"{old_date}.log.gz").exists()
+
+
+def test_rotate_logs_keeps_recent_files(tmp_path):
+    from datetime import date
+    today_log = tmp_path / "metrics" / f"{date.today()}.log"
+    today_log.parent.mkdir(parents=True, exist_ok=True)
+    today_log.write_text("2026-06-01T09:00:00 session_start\n")
+    mr.rotate_logs(base_dir=tmp_path)
+    assert today_log.exists()
