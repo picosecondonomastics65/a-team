@@ -1,92 +1,92 @@
 ---
 name: five-whys
-description: Análise de causa raiz com a técnica dos Cinco Porquês. Usar quando há um bug persistente, falha de processo, ou problema recorrente que os fixes superficiais não resolvem. Garante que o fix ataca a raiz, não o sintoma.
+description: Root cause analysis using the Five Whys technique. Use when a bug persists despite surface fixes, a failure recurs, or a process keeps breaking. Ensures the fix targets the root, not the symptom.
 ---
 
-# Five Whys — Análise de Causa Raiz
+# Five Whys — Root Cause Analysis
 
-## Regra de Ouro
-
-```
-NÃO FIXES O SINTOMA. ENCONTRA A CAUSA.
-```
-
-Um fix que não ataca a raiz é um fix temporário. A causa volta.
-
-## Protocolo
-
-### Passo 1 — Definir o problema com precisão
-
-Escreve uma frase curta e concreta. Não vaga.
-
-| Errado | Correto |
-|--------|---------|
-| "O sistema está lento" | "A API /orders demora >3s para 90% dos requests em produção desde sexta" |
-| "Os testes falham às vezes" | "test_payment_flow falha em CI uma vez por ~20 runs sem mensagem de erro clara" |
-
-### Passo 2 — Cinco Porquês em cascata
-
-Para cada resposta, pergunta: **"Por que é que isso acontece?"**
-
-Não pares antes de chegar a algo que podes controlar — uma decisão, um processo, uma linha de código, uma configuração ausente.
+## The Rule
 
 ```
-Problema: Utilizadores vêem dados de outro utilizador
-  Porquê 1: A cache devolve uma entrada errada
-  Porquê 2: A chave de cache não inclui o user_id
-  Porquê 3: O developer assumiu que o endpoint era público
-  Porquê 4: Não havia test de isolamento por utilizador
-  Porquê 5: O processo de code review não verifica isolamento de dados
-  → Causa raiz: processo de review sem checklist de segurança
+DO NOT FIX THE SYMPTOM. FIND THE CAUSE.
 ```
 
-### Passo 3 — Validar em sentido inverso
+A fix that doesn't address the root cause is temporary. The cause returns.
 
-Lê a cadeia de baixo para cima: "Porque não temos checklist de review → dados de cache sem user_id → leak de dados". Se a cadeia faz sentido, a causa raiz é válida.
+## Protocol
 
-### Passo 4 — Fix na causa raiz, não no sintoma
+### Step 1 — Define the problem precisely
 
-Implementa a solução no nível mais fundo que for praticável.
+One concrete sentence. Not vague.
 
-| Nível do fix | Exemplo | Duração |
-|---|---|---|
-| Sintoma | Limpar a cache manualmente | Horas |
-| Causa próxima | Adicionar user_id à chave | Dias |
-| Causa raiz | Adicionar checklist de isolamento ao review | Permanente |
+| Wrong | Correct |
+|-------|---------|
+| "The system is slow" | "GET /orders exceeds 3s for 90% of requests in prod since Friday" |
+| "Tests fail sometimes" | "test_payment_flow fails in CI roughly 1 in 20 runs with no clear error message" |
 
-Quando só consegues fixar um nível intermédio, documenta o nível raiz como dívida técnica com um TODO rastreável.
+### Step 2 — Five Whys cascade
 
-## Ramificações
+For each answer, ask: **"Why does that happen?"**
 
-Uma causa raiz pode ter múltiplos ramos — explora todos antes de escolher onde fixar.
+Don't stop until you reach something you control — a decision, a process, a line of code, a missing configuration.
 
 ```
-Problema: Deploy falha em produção mas não em staging
-  Ramo A: configuração diferente (env vars, secrets)
-  Ramo B: dados de produção com volume/formato diferente
-  Ramo C: dependências de rede só disponíveis em prod
+Problem: Users see another user's data
+  Why 1: Cache returns the wrong entry
+  Why 2: Cache key does not include user_id
+  Why 3: Developer assumed the endpoint was public
+  Why 4: No isolation test existed for this endpoint
+  Why 5: Code review had no data isolation checklist
+  → Root cause: review process missing a security checklist
 ```
 
-Testa cada ramo independentemente. Não assumas.
+### Step 3 — Validate in reverse
 
-## Quando Parar
+Read the chain bottom-up: "No review checklist → cache key missing user_id → data leak." If the chain holds, the root cause is valid.
 
-Para antes do 5.º "porquê" se chegares a uma causa raiz clara e accionável. Para depois do 5.º se a cadeia não convergiu — pode haver múltiplas causas raiz independentes.
+### Step 4 — Fix at the root, not the symptom
 
-## Output Esperado
+Fix at the deepest level that is practical to change.
 
-No final da análise, documenta:
+| Fix level | Example | Durability |
+|-----------|---------|------------|
+| Symptom | Manually flush cache | Hours |
+| Proximate cause | Add user_id to cache key | Days |
+| Root cause | Add isolation checklist to review | Permanent |
+
+If you can only fix an intermediate level, document the root cause as tracked technical debt with a concrete TODO.
+
+## Branching
+
+A root cause can have multiple branches — explore all before choosing where to fix.
+
+```
+Problem: Deploy fails in prod but not in staging
+  Branch A: different configuration (env vars, secrets)
+  Branch B: prod data has different volume or format
+  Branch C: network dependencies only reachable in prod
+```
+
+Test each branch independently. Do not assume.
+
+## When to Stop
+
+Stop before the 5th why if you reach a clear, actionable root cause. Stop after the 5th if the chain hasn't converged — there may be multiple independent root causes.
+
+## Output
+
+Document the analysis:
 
 ```markdown
-**Problema:** [frase concreta]
-**Causa raiz:** [o nível mais fundo encontrado]
-**Fix proposto:** [acção concreta com ficheiro/componente]
-**Fix temporário (se necessário):** [o que aplicas agora enquanto o fix real não está pronto]
-**Dívida técnica:** [o que ficou por resolver e porquê]
+**Problem:** [concrete one-liner]
+**Root cause:** [deepest level found]
+**Fix:** [concrete action with file/component]
+**Temporary fix (if needed):** [what you apply now while the real fix is in progress]
+**Technical debt:** [what remains unresolved and why]
 ```
 
-## Integração com A Team
+## Integration with A Team
 
-- Usa esta skill **antes** de lançar o `systematic-debugging` agent — os Cinco Porquês definem o escopo da investigação
-- Após encontrar a causa raiz, usa o `tdd-guide` agent para escrever um test que a teria capturado
-- Documenta a análise em `DAILY.md` se a causa raiz implicar mudança de processo
+- Run this skill **before** launching the `systematic-debugging` agent — Five Whys defines the investigation scope
+- After finding the root cause, use the `tdd-guide` agent to write the test that would have caught it
+- If the root cause implies a process change, document the analysis in `DAILY.md`
