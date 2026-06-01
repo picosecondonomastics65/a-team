@@ -112,6 +112,17 @@
     "superpowers@claude-plugins-official": true
   },
   "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python .agent-sync/pre_tool_use.py 2>/dev/null || python3 .agent-sync/pre_tool_use.py 2>/dev/null || true"
+          }
+        ]
+      }
+    ],
     "SessionStart": [
       {
         "hooks": [
@@ -143,6 +154,10 @@
           {
             "type": "command",
             "command": "python .agent-sync/metrics.py session_end 2>/dev/null || python3 .agent-sync/metrics.py session_end 2>/dev/null || true"
+          },
+          {
+            "type": "command",
+            "command": "python .agent-sync/session_export.py 2>/dev/null || python3 .agent-sync/session_export.py 2>/dev/null || true"
           }
         ]
       }
